@@ -1,8 +1,9 @@
 package jhorlamide;
 
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
-@CommandLine.Command(name = "ccwc", mixinStandardHelpOptions = true, version = "ccwc 1.0",
+@Command(name = "ccwc", mixinStandardHelpOptions = true, version = "ccwc 1.0",
         description = "simple wc tool to counts the number for lines, words, characters from a file")
 public class Main {
     public static void main(String[] args) {
