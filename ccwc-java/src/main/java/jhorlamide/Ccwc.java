@@ -6,6 +6,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -25,7 +26,6 @@ public class Ccwc implements Callable<Result> {
     @Option(names = {"-w"}, description = "-w for count words")
     private boolean switchWords;
 
-
     public void run(String args) {
         var command = new CommandLine(new Ccwc());
         var exitCode = command.execute(args);
@@ -40,29 +40,35 @@ public class Ccwc implements Callable<Result> {
     @Override
     public Result call() throws Exception {
         var result = new Result();
-        Path path = Path.of(this.file.toURI());
-        byte[] fileContent = Files.readAllBytes(path);
-        boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
 
-        if (switchAll) {
-            this.switchLine = true;
-            this.switchWords = true;
-            this.switchCharacters = true;
+        try {
+
+            Path path = Path.of(this.file.toURI());
+            byte[] fileContent = Files.readAllBytes(path);
+            boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
+
+            if (switchAll) {
+                this.switchLine = true;
+                this.switchWords = true;
+                this.switchCharacters = true;
+            }
+
+            if (this.switchCharacters) {
+                result.charCount = getCharsCount(fileContent);
+            }
+
+            if (this.switchLine) {
+                result.lineCount = getLineCount(fileContent);
+            }
+
+            if (this.switchWords) {
+                result.wordCount = getWordCount(fileContent);
+            }
+
+            return result;
+        } catch (Exception exception) {
+            throw new FileNotFoundException();
         }
-
-        if (this.switchCharacters) {
-            result.charCount = getCharsCount(fileContent);
-        }
-
-        if (this.switchLine) {
-            result.lineCount = getLineCount(fileContent);
-        }
-
-        if (this.switchWords) {
-            result.wordCount = getWordCount(fileContent);
-        }
-
-        return result;
     }
 
     private int getCharsCount(byte[] fileBytes) {

@@ -17,23 +17,27 @@ class CcwcTool:
 
     def ccwc(self, file_content, filename=None, options=None):
         counts = self.count_metrics(file_content)
+        byte_count = counts[options]
+        lines_count = counts[options]
+        word_count = counts[options]
+        character_count = counts[options]
 
         try:
             if options == "-c":
-                byte_count = counts[options]
                 print(f"{byte_count} {filename}" if filename else f"{byte_count}")
 
             elif options == "-l":
-                lines_count = counts[options]
                 print(f"{lines_count} {filename}" if filename else f"{lines_count}")
 
             elif options == "-w":
-                word_count = counts[options]
                 print(f"{word_count} {filename}" if filename else f"{word_count}")
 
             elif options == "-m":
-                character_count = counts[options]
-                print(f"{character_count} {filename}" if filename else f"{character_count}")
+                print(
+                    f"{character_count} {filename}"
+                    if filename
+                    else f"{character_count}"
+                )
 
             elif options is None:
                 print(
