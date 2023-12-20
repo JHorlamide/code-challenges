@@ -14,4 +14,6 @@ Make sure that you have python installed
 
 * Clone the project and `cd` to the ccwc folder
 * Run `npm run build`
-* Run `node dist/index.js `
+* Run `npm install -g .` to install globally.
+* Run ccwc `<option> <path_to_file>` or
+* Run ccwc `<path_to_file>`

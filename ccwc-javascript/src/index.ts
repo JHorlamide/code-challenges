@@ -1,8 +1,6 @@
-/* Core */
-import fs from "node:fs/promises";
+#! /usr/bin/env node
 
-/* Libraries */
-import figlet from "figlet";
+import fs from "node:fs/promises";
 import { Command, OptionValues } from "commander";
 
 class CcwcTool {
@@ -12,12 +10,9 @@ class CcwcTool {
   constructor() {
     this.program = new Command();
 
-    console.log(figlet.textSync("ccwc tool"));
-
     this.program
       .version("1.0")
       .description("Simple wc tool to count the number for lines, words, characters from a file")
-      .option("filename", "Return the line, words, character, and byte counts respectively")
       .option("-l, --line <value>", "Count the number of lines in a file")
       .option("-w, --words <value>", "Count the number of words in a file")
       .option("-m, --character <value>", "Count the number of character in a file")
@@ -65,8 +60,8 @@ class CcwcTool {
     try {
       const fileContent = await this.readFileContent(filepath);
       return fileContent.split("\n").length;
-    } catch (error) {
-      console.error(`Error occurred: ${error}`);
+    } catch (error: any) {
+      throw new Error(error);
     }
   }
 
@@ -74,22 +69,26 @@ class CcwcTool {
     try {
       const fileContent = await this.readFileContent(filepath);
       return fileContent.split(/\s+/).filter(word => word !== "").length;
-    } catch (error) {
-      console.error(`Error occurred: ${error}`);
+    } catch (error: any) {
+      throw new Error(error);
     }
   }
 
   private async countCharacter(filepath: string) {
-    const fileContent = await this.readFileContent(filepath);
-    return fileContent.split("").length
+    try {
+      const fileContent = await this.readFileContent(filepath);
+      return fileContent.split("").length
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
 
   private async countByte(filepath: string) {
     try {
       const fileSizeInBytes = await this.getFileSizeInByte(filepath);
       return fileSizeInBytes;
-    } catch (error) {
-      console.error(`Error occurred: ${error}`);
+    } catch (error: any) {
+      throw new Error(error);
     }
   }
 
@@ -102,13 +101,13 @@ class CcwcTool {
       ]);
 
       console.log(lineCount, wordsCount, byteCount, filepath);
-    } catch (error) {
-      console.error(`Error occurred: ${error}`)
+    } catch (error: any) {
+      throw new Error(error);
     }
   }
 
-  private getFilename(filepath: any) {
-    return typeof filepath === "string" ? filepath : __dirname;
+  private getFilename(optionType: any) {
+    return typeof optionType === "string" ? optionType : __dirname;
   }
 
   private async readFileContent(filepath: string): Promise<string> {
@@ -121,8 +120,8 @@ class CcwcTool {
 
   private async getFileSizeInByte(filepath: string): Promise<number> {
     try {
-      const stat = await fs.stat(filepath);
-      return stat.size;
+      const fileStat = await fs.stat(filepath);
+      return fileStat.size;
     } catch (error) {
       throw new Error(`Error reading file: ${error}`);
     }

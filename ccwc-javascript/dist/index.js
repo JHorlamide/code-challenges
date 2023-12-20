@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -12,19 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/* Core */
 const promises_1 = __importDefault(require("node:fs/promises"));
-/* Libraries */
-const figlet_1 = __importDefault(require("figlet"));
 const commander_1 = require("commander");
 class CcwcTool {
     constructor() {
         this.program = new commander_1.Command();
-        console.log(figlet_1.default.textSync("ccwc tool"));
         this.program
             .version("1.0")
             .description("Simple wc tool to count the number for lines, words, characters from a file")
-            .option("filename", "Return the line, words, character, and byte counts respectively")
             .option("-l, --line <value>", "Count the number of lines in a file")
             .option("-w, --words <value>", "Count the number of words in a file")
             .option("-m, --character <value>", "Count the number of character in a file")
@@ -70,7 +66,7 @@ class CcwcTool {
                 return fileContent.split("\n").length;
             }
             catch (error) {
-                console.error(`Error occurred: ${error}`);
+                throw new Error(error);
             }
         });
     }
@@ -81,14 +77,19 @@ class CcwcTool {
                 return fileContent.split(/\s+/).filter(word => word !== "").length;
             }
             catch (error) {
-                console.error(`Error occurred: ${error}`);
+                throw new Error(error);
             }
         });
     }
     countCharacter(filepath) {
         return __awaiter(this, void 0, void 0, function* () {
-            const fileContent = yield this.readFileContent(filepath);
-            return fileContent.split("").length;
+            try {
+                const fileContent = yield this.readFileContent(filepath);
+                return fileContent.split("").length;
+            }
+            catch (error) {
+                throw new Error(error);
+            }
         });
     }
     countByte(filepath) {
@@ -98,7 +99,7 @@ class CcwcTool {
                 return fileSizeInBytes;
             }
             catch (error) {
-                console.error(`Error occurred: ${error}`);
+                throw new Error(error);
             }
         });
     }
@@ -113,12 +114,12 @@ class CcwcTool {
                 console.log(lineCount, wordsCount, byteCount, filepath);
             }
             catch (error) {
-                console.error(`Error occurred: ${error}`);
+                throw new Error(error);
             }
         });
     }
-    getFilename(filepath) {
-        return typeof filepath === "string" ? filepath : __dirname;
+    getFilename(optionType) {
+        return typeof optionType === "string" ? optionType : __dirname;
     }
     readFileContent(filepath) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -133,8 +134,8 @@ class CcwcTool {
     getFileSizeInByte(filepath) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const stat = yield promises_1.default.stat(filepath);
-                return stat.size;
+                const fileStat = yield promises_1.default.stat(filepath);
+                return fileStat.size;
             }
             catch (error) {
                 throw new Error(`Error reading file: ${error}`);
