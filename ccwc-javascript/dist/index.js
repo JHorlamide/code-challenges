@@ -13,134 +13,90 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const promises_1 = __importDefault(require("node:fs/promises"));
-const commander_1 = require("commander");
+const node_fs_1 = __importDefault(require("node:fs"));
 class CcwcTool {
-    constructor() {
-        this.program = new commander_1.Command();
-        this.program
-            .version("1.0")
-            .description("Simple wc tool to count the number for lines, words, characters from a file")
-            .option("-l, --line <value>", "Count the number of lines in a file")
-            .option("-w, --words <value>", "Count the number of words in a file")
-            .option("-m, --character <value>", "Count the number of character in a file")
-            .option("-c, --byte_count <value>", "Count the number of bytes in a file")
-            .parse(process.argv);
-        this.options = this.program.opts();
-    }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                if (!process.argv.slice(2).length) {
-                    this.program.outputHelp();
-                }
-                if (process.argv.slice(2).length === 1) {
-                    this.printDefaultValue(process.argv[process.argv.length - 1]);
-                }
-                if (this.options.line) {
-                    const filename = this.getFilename(this.options.line);
-                    console.log(yield this.countLines(filename), filename);
-                }
-                if (this.options.words) {
-                    const filename = this.getFilename(this.options.words);
-                    console.log(yield this.countWords(filename), filename);
-                }
-                if (this.options.character) {
-                    const filename = this.getFilename(this.options.character);
-                    console.log(yield this.countCharacter(filename), filename);
-                }
-                if (this.options.byte_count) {
-                    const filename = this.getFilename(this.options.byte_count);
-                    console.log(yield this.countByte(filename), filename);
-                }
+            const [option, filename] = process.argv.slice(2);
+            const noOption = process.argv.slice(2).length === 1;
+            if (noOption) {
+                return this.printDefaultValue(option);
             }
-            catch (error) {
-                console.error(`Error occurred: ${error}`);
+            switch (option) {
+                case "-c":
+                    this.printResult(this.countByte(filename), filename);
+                    break;
+                case "-l":
+                    this.printResult(this.countLines(filename), filename);
+                    break;
+                case "-w":
+                    this.printResult(this.countWords(filename), filename);
+                    break;
+                case "-m":
+                    this.printResult(this.countCharacter(filename), filename);
+                    break;
+                default:
+                    console.error("Invalid option. Please use -c, -l, -w, or -m.");
+                    break;
             }
         });
     }
-    countLines(filepath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fileContent = yield this.readFileContent(filepath);
-                return fileContent.split("\n").length;
-            }
-            catch (error) {
-                throw new Error(error);
-            }
-        });
+    countLines(filename) {
+        try {
+            const fileContent = this.readFileContent(filename);
+            return fileContent.split("\n").length;
+        }
+        catch (error) {
+            throw new Error(error);
+        }
     }
-    countWords(filepath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fileContent = yield this.readFileContent(filepath);
-                return fileContent.split(/\s+/).filter(word => word !== "").length;
-            }
-            catch (error) {
-                throw new Error(error);
-            }
-        });
+    countWords(filename) {
+        try {
+            const fileContent = this.readFileContent(filename);
+            return fileContent.split(/\s+/).filter(word => word !== "").length;
+        }
+        catch (error) {
+            throw new Error(error);
+        }
     }
-    countCharacter(filepath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fileContent = yield this.readFileContent(filepath);
-                return fileContent.split("").length;
-            }
-            catch (error) {
-                throw new Error(error);
-            }
-        });
+    countCharacter(filename) {
+        try {
+            const fileContent = this.readFileContent(filename);
+            return fileContent.split("").length;
+        }
+        catch (error) {
+            throw new Error(error);
+        }
     }
-    countByte(filepath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fileSizeInBytes = yield this.getFileSizeInByte(filepath);
-                return fileSizeInBytes;
-            }
-            catch (error) {
-                throw new Error(error);
-            }
-        });
+    countByte(filename) {
+        try {
+            return Buffer.byteLength(this.readFileContent(filename));
+        }
+        catch (error) {
+            throw new Error(error);
+        }
     }
-    printDefaultValue(filepath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const [lineCount, wordsCount, byteCount] = yield Promise.all([
-                    this.countLines(filepath),
-                    this.countWords(filepath),
-                    this.countByte(filepath)
-                ]);
-                console.log(lineCount, wordsCount, byteCount, filepath);
-            }
-            catch (error) {
-                throw new Error(error);
-            }
-        });
-    }
-    getFilename(optionType) {
-        return typeof optionType === "string" ? optionType : __dirname;
+    printDefaultValue(filename) {
+        try {
+            const lineCount = this.countLines(filename);
+            const wordsCount = this.countWords(filename);
+            const byteCount = this.countByte(filename);
+            console.log(lineCount, wordsCount, byteCount, filename);
+        }
+        catch (error) {
+            throw new Error(error);
+        }
     }
     readFileContent(filepath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield promises_1.default.readFile(filepath, { encoding: 'utf8' });
-            }
-            catch (error) {
-                throw new Error(`Error reading file: ${error}`);
-            }
-        });
+        try {
+            return node_fs_1.default.readFileSync(filepath, "utf-8");
+        }
+        catch (error) {
+            throw new Error(`Error reading file: ${error}`);
+        }
     }
-    getFileSizeInByte(filepath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fileStat = yield promises_1.default.stat(filepath);
-                return fileStat.size;
-            }
-            catch (error) {
-                throw new Error(`Error reading file: ${error}`);
-            }
-        });
+    printResult(result, filename) {
+        console.log(result, filename);
     }
 }
 const ccwc = new CcwcTool();
