@@ -5,9 +5,8 @@ import fs from "node:fs";
 class CcwcTool {
   public async run() {
     const [option, filename] = process.argv.slice(2);
-    const noOption = process.argv.slice(2).length === 1;
 
-    if (noOption) {
+    if (filename === undefined) {
       return this.printDefaultValue(option);
     }
 
@@ -31,49 +30,29 @@ class CcwcTool {
   }
 
   private countLines(filename: string) {
-    try {
-      const fileContent = this.readFileContent(filename);
-      return fileContent.split("\n").length;
-    } catch (error: any) {
-      throw new Error(error);
-    }
+    const fileContent = this.readFileContent(filename);
+    return fileContent.split("\n").length ? fileContent.split("\n").length - 1 : 0;
   }
 
   private countWords(filename: string) {
-    try {
-      const fileContent = this.readFileContent(filename);
-      return fileContent.split(/\s+/).filter(word => word !== "").length;
-    } catch (error: any) {
-      throw new Error(error);
-    }
+    const fileContent = this.readFileContent(filename);
+    return fileContent.split(/\s+/).filter(word => word !== "").length;
   }
 
   private countCharacter(filename: string) {
-    try {
-      const fileContent = this.readFileContent(filename);
-      return fileContent.split("").length;
-    } catch (error: any) {
-      throw new Error(error);
-    }
+    const fileContent = this.readFileContent(filename);
+    return fileContent.split("").length;
   }
 
   private countByte(filename: string) {
-    try {
-      return Buffer.byteLength(this.readFileContent(filename));
-    } catch (error: any) {
-      throw new Error(error);
-    }
+    return Buffer.byteLength(this.readFileContent(filename));
   }
 
   private printDefaultValue(filename: string) {
-    try {
-      const lineCount = this.countLines(filename);
-      const wordsCount = this.countWords(filename)
-      const byteCount = this.countByte(filename);
-      console.log(lineCount, wordsCount, byteCount, filename);
-    } catch (error: any) {
-      throw new Error(error);
-    }
+    const lineCount = this.countLines(filename);
+    const wordsCount = this.countWords(filename)
+    const byteCount = this.countByte(filename);
+    console.log(lineCount, wordsCount, byteCount, filename);
   }
 
   private readFileContent(filepath: string): string {

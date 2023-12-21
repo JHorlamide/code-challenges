@@ -39,9 +39,7 @@ public class Main implements Callable<Result> {
         var result = new Result();
 
         try {
-
-            Path path = Path.of(this.file.toURI());
-            byte[] fileContent = Files.readAllBytes(path);
+            byte[] fileContent = Files.readAllBytes(Path.of(this.file.toURI()));
             boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
 
             if (switchAll) {

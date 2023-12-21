@@ -39,36 +39,3 @@ const fileStatsCounter = new FileStatsCounter(process.argv[process.argv.length -
 fileStatsCounter.processFile().catch((error) => {
   console.error('Error processing the file:', error);
 });
-
-
-// try {
-//   if (!process.argv.slice(2).length) {
-//     this.program.outputHelp();
-//   }
-
-//   if (process.argv.slice(2).length === 1) {
-//     this.printDefaultValue(process.argv[process.argv.length - 1]);
-//   }
-
-//   if (this.options.line) {
-//     const filename = this.getFilename(this.options.line);
-//     console.log(this.countLines(filename), filename);
-//   }
-
-//   if (this.options.words) {
-//     const filename = this.getFilename(this.options.words);
-//     console.log(this.countWords(filename), filename);
-//   }
-
-//   if (this.options.character) {
-//     const filename = this.getFilename(this.options.character);
-//     console.log(this.countCharacter(filename), filename)
-//   }
-
-//   if (this.options.byte_count) {
-//     const filename = this.getFilename(this.options.byte_count);
-//     console.log(this.countByte(filename), filename);
-//   }
-// } catch (error) {
-//   console.error(`Error occurred: ${error}`)
-// }
