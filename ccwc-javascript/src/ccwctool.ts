@@ -2,8 +2,8 @@
 
 import fs from "node:fs";
 
-class CcwcTool {
-  public async run() {
+export class CcwcTool {
+  public run() {
     const [option, filename] = process.argv.slice(2);
 
     if (filename === undefined) {
