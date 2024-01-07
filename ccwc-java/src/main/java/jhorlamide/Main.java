@@ -36,9 +36,12 @@ public class Main implements Callable<Result> {
     public Result call() throws Exception {
         var result = new Result();
 
-        try {
-            byte[] fileContent = Files.readAllBytes(Path.of(this.file.toURI()));
-            boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
+        if (!this.file.exists()) {
+            throw new FileNotFoundException("File "+this.file.getAbsolutePath()+" not found");
+        }
+        result.fileName = this.file.getName();
+        byte[] fileContent = Files.readAllBytes(Path.of(this.file.toURI()));
+        boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
 
             if (switchAll) {
                 this.switchLine = true;
