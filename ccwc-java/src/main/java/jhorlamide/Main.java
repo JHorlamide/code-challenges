@@ -94,11 +94,10 @@ public class Main implements Callable<Result> {
                 lastWordCount++;
             }
 
-            if (lastWordCount > 0) {
-                i++;
-            }
         }
-
+        if (lastWordCount > 0) {
+            i++;
+        }
         return i;
     }
 }
