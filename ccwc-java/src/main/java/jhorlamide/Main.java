@@ -27,11 +27,9 @@ public class Main implements Callable<Result> {
         var command = new CommandLine(new Main());
         var exitCode = command.execute(args);
         var result = command.getExecutionResult();
-        var resultString = new StringBuffer();
-        resultString.append(" ");
-
-        System.out.println(result.toString());
-        System.exit(exitCode);
+        if (result != null) {
+            System.out.println(result.toString());
+        }
     }
 
     @Override
