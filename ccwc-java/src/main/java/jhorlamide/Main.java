@@ -43,28 +43,25 @@ public class Main implements Callable<Result> {
         byte[] fileContent = Files.readAllBytes(Path.of(this.file.toURI()));
         boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
 
-            if (switchAll) {
-                this.switchLine = true;
-                this.switchWords = true;
-                this.switchCharacters = true;
-            }
-
-            if (this.switchCharacters) {
-                result.charCount = getCharsCount(fileContent);
-            }
-
-            if (this.switchLine) {
-                result.lineCount = getLineCount(fileContent);
-            }
-
-            if (this.switchWords) {
-                result.wordCount = getWordCount(fileContent);
-            }
-
-            return result;
-        } catch (Exception exception) {
-            throw new FileNotFoundException();
+        if (switchAll) {
+            this.switchLine = true;
+            this.switchWords = true;
+            this.switchCharacters = true;
         }
+
+        if (this.switchCharacters) {
+            result.charCount = getCharsCount(fileContent);
+        }
+
+        if (this.switchLine) {
+            result.lineCount = getLineCount(fileContent);
+        }
+
+        if (this.switchWords) {
+            result.wordCount = getWordCount(fileContent);
+        }
+
+        return result;
     }
 
     private int getCharsCount(byte[] fileBytes) {
