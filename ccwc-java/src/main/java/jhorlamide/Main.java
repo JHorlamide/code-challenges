@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "ccwc", mixinStandardHelpOptions = true, version = "ccwc 1.0",
         description = "simple wc tool to counts the number for lines, words, characters from a file")
 public class Main implements Callable<Result> {
-    @CommandLine.Parameters(index = "0", description = "The file to calculate for.", defaultValue = "./text.txt")
+    @CommandLine.Parameters(index = "0", description = "The file to calculate for.", defaultValue = "./test.txt")
     private File file;
 
     @CommandLine.Option(names = {"-c"}, description = "-c for counting character")
