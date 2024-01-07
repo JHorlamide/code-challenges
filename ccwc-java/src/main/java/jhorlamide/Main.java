@@ -25,10 +25,10 @@ public class Main implements Callable<Result> {
 
     public static void main(String[] args) {
         var command = new CommandLine(new Main());
-        var exitCode = command.execute(args);
+        command.execute(args);
         var result = command.getExecutionResult();
         if (result != null) {
-            System.out.println(result.toString());
+            System.out.println(result);
         }
     }
 
