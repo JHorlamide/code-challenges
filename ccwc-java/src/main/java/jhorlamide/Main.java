@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "ccwc", mixinStandardHelpOptions = true, version = "ccwc 1.0",
         description = "simple wc tool to counts the number for lines, words, characters from a file")
 public class Main implements Callable<Result> {
-    @CommandLine.Parameters(index = "0", description = "The file to calculate for.", defaultValue = "./test.txt")
+    @CommandLine.Parameters(index = "0", description = "The file to calculate for.", defaultValue = "./text.txt")
     private File file;
 
     @CommandLine.Option(names = {"-c"}, description = "-c for counting character")
@@ -25,43 +25,45 @@ public class Main implements Callable<Result> {
 
     public static void main(String[] args) {
         var command = new CommandLine(new Main());
-        command.execute(args);
+        var exitCode = command.execute(args);
         var result = command.getExecutionResult();
-        if (result != null) {
-            System.out.println(result);
-        }
+        var resultString = new StringBuffer();
+        resultString.append(" ");
+
+        System.out.println(result.toString());
+        System.exit(exitCode);
     }
 
     @Override
     public Result call() throws Exception {
         var result = new Result();
 
-        if (!this.file.exists()) {
-            throw new FileNotFoundException("File "+this.file.getAbsolutePath()+" not found");
-        }
-        result.fileName = this.file.getName();
-        byte[] fileContent = Files.readAllBytes(Path.of(this.file.toURI()));
-        boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
+        try {
+            byte[] fileContent = Files.readAllBytes(Path.of(this.file.toURI()));
+            boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
 
-        if (switchAll) {
-            this.switchLine = true;
-            this.switchWords = true;
-            this.switchCharacters = true;
-        }
+            if (switchAll) {
+                this.switchLine = true;
+                this.switchWords = true;
+                this.switchCharacters = true;
+            }
 
-        if (this.switchCharacters) {
-            result.charCount = getCharsCount(fileContent);
-        }
+            if (this.switchCharacters) {
+                result.charCount = getCharsCount(fileContent);
+            }
 
-        if (this.switchLine) {
-            result.lineCount = getLineCount(fileContent);
-        }
+            if (this.switchLine) {
+                result.lineCount = getLineCount(fileContent);
+            }
 
-        if (this.switchWords) {
-            result.wordCount = getWordCount(fileContent);
-        }
+            if (this.switchWords) {
+                result.wordCount = getWordCount(fileContent);
+            }
 
-        return result;
+            return result;
+        } catch (Exception exception) {
+            throw new FileNotFoundException();
+        }
     }
 
     private int getCharsCount(byte[] fileBytes) {
@@ -94,10 +96,11 @@ public class Main implements Callable<Result> {
                 lastWordCount++;
             }
 
+            if (lastWordCount > 0) {
+                i++;
+            }
         }
-        if (lastWordCount > 0) {
-            i++;
-        }
+
         return i;
     }
 }
