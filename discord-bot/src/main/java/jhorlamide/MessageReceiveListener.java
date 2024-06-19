@@ -69,7 +69,7 @@ public class MessageReceiveListener extends ListenerAdapter {
          String messageResponse = getRandomChallenge();
          message.getChannel().sendMessage(messageResponse).queue();
       } catch (IOException e) {
-         responseWithError(message, e, "❌ Error reading challenges ❌. Please again later");
+         responseWithError(message, e, "❌ Error reading challenges ❌. Please try again later");
       }
    }
 
