@@ -1,5 +1,7 @@
 package jhorlamide;
 
+import jhorlamide.BackendServer.BackendServer;
+import jhorlamide.LoadBalancerServer.LoadBalancerServer;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
@@ -33,7 +35,7 @@ public class LoadBalancer implements Callable<Result> {
    @Override
    public Result call() throws Exception {
       if (isBackend) {
-         new BEServer(PORT);
+         new BackendServer(PORT);
       } else {
          if (backendList == null || backendList.isEmpty()) {
             backendList = "http://localhost:9090";
@@ -41,7 +43,7 @@ public class LoadBalancer implements Callable<Result> {
 
          String[] backendListArray = backendList.split(",");
          List<String> backendServers = new ArrayList<>(Arrays.asList(backendListArray));
-         new LBServer(PORT, backendServers);
+         new LoadBalancerServer(PORT, backendServers);
       }
 
       return new Result();
