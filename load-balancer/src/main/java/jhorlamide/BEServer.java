@@ -8,12 +8,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BEServer {
-   private static final Logger logger = Logger.getLogger(BEServer.class.getName());
-
    protected BEServer(int port) throws Exception {
       Server server = new Server(port);
 
@@ -26,22 +22,11 @@ public class BEServer {
       context.addServlet(new ServletHolder(new BaseRequestHandler()), "/");
       context.addServlet(new ServletHolder(new HealthCheckRequestHandler()), "/health");
 
-      logger.info(String.format("Backend server started on port %s ...", port));
+      RequestLogger.logServerStart("Backend server started on port", port);
 
       // Start the server
       server.start();
       server.join();
-   }
-
-   private static void logRequest(HttpServletRequest request) {
-      var reqAddress = request.getRemoteAddr();
-      var reqMethod = request.getMethod();
-      var reqURI = request.getRequestURI();
-      var reqProtocol = request.getProtocol();
-      var reqHeader = request.getHeader("User-Agent");
-      var reqHost = request.getRemoteHost();
-
-      logger.info(String.format("Received request from %s\n%s %s %s\nUser-Agent: %s\nHost: %s", reqAddress, reqMethod, reqURI, reqProtocol, reqHeader, reqHost));
    }
 
    public static class BaseRequestHandler extends HttpServlet {
@@ -54,7 +39,7 @@ public class BEServer {
          responseWriter.flush();
          responseWriter.close();
 
-         BEServer.logRequest(request);
+         RequestLogger.log(request);
       }
    }
 
@@ -71,9 +56,9 @@ public class BEServer {
             responseWriter.flush();
             responseWriter.close();
 
-            BEServer.logRequest(request);
+            RequestLogger.log(request);
          } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            RequestLogger.logError(e.getMessage(), e);
          }
       }
    }
