@@ -47,8 +47,6 @@ public class LBServer {
     * @throws IOException if an I/O error occurs during request execution
     */
    private static Response executeRequest(String backendUrl, HttpServletRequest servletRequest) throws IOException {
-      System.out.println("BaseURL: " + backendUrl + " servletRequestURI: " + servletRequest.getRequestURI());
-
       OkHttpClient httpClient = new OkHttpClient();
       Builder requestBuilder = new Request.Builder()
           .url(backendUrl + servletRequest.getRequestURI());
@@ -56,7 +54,7 @@ public class LBServer {
       // Retrieve all the header names from the incoming HttpServletRequest
       Enumeration<String> requestHeaders = servletRequest.getHeaderNames();
 
-      // Iterate over each header name
+      // Iterate over each header name and add it to the requestBuilder header.
       while (requestHeaders.hasMoreElements()) {
          String requestHeaderKey = requestHeaders.nextElement();
          String requestHeaderValue = servletRequest.getHeader(requestHeaderKey);
