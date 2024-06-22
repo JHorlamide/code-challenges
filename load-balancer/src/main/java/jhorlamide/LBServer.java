@@ -79,7 +79,7 @@ public class LBServer {
                Response backendResponse = executeRequest(backendUrl, request);
 
                int responseStatusCode = backendResponse.code();
-               String responseBody = backendResponse.body().toString();
+               String responseBody = backendResponse.body().string();
                String responseContentType = backendResponse.header("Content-Type");
 
                System.out.println(responseBody);
