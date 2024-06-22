@@ -1,29 +1,37 @@
 package jhorlamide;
 
 import picocli.CommandLine;
+import picocli.CommandLine.Option;
 
-import java.io.File;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "LoadBalancer", mixinStandardHelpOptions = true, version = "1.0", description = "A simple load balancer server")
+@CommandLine.Command(name = "LoadBalancer", mixinStandardHelpOptions = true, version = "LoadBalancer 1.0", description = "A simple application layer load balancer server")
 public class Main implements Callable<Result> {
-   @CommandLine.Option(names = {"-p"}, description = "-p for specify port")
-   private boolean switchCharacters;
+   @Option(names = {"-p"}, description = "The server port")
+   private int port = 8080;
 
-   @CommandLine.Option(names = {"-b"}, description = "-b for backend position")
-   private boolean switchLine;
+   @Option(names = {"-b"}, arity = "0..", description = "-b for backend position")
+   private boolean isBackend;
 
-   @CommandLine.Option(names = {"-blist"}, description = "-blist for accepting list of backend servers")
-   private boolean switchWords;
+   @Option(names = {"-blist"}, description = "-blist for accepting list of backend servers")
+   private String backendList;
 
-   public static void main(String[] args) throws Exception {
+   public static void main(String[] args) {
       var command = new CommandLine(new Main());
       var exitCode = command.execute(args);
-      var result = command.getExecutionResult();
+      command.getExecutionResult();
+
+      //System.exit(exitCode);
    }
 
    @Override
    public Result call() throws Exception {
-      return null;
+      if (isBackend) {
+         new BackendServer(port);
+      } else {
+         System.out.println("Not backend");
+      }
+
+      return new Result();
    }
 }
