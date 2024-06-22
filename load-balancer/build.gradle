@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'jhorlamide'
@@ -24,6 +25,21 @@ dependencies {
 
 application {
     mainClass = 'jhorlamide.LoadBalancer'
+}
+
+shadowJar {
+    archiveBaseName.set('load-balancer')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': application.mainClass,
+                'Class-Path': configurations.runtimeClasspath.files.join(' ')
+        )
+    }
 }
 
 test {
