@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "ccwc", mixinStandardHelpOptions = true, version = "ccwc 1.0",
         description = "simple wc tool to counts the number for lines, words, characters from a file")
 public class Main implements Callable<Result> {
-    @CommandLine.Parameters(index = "0", description = "The file to calculate for.", defaultValue = "./text.txt")
+    @CommandLine.Parameters(index = "0", description = "The file to calculate for.", defaultValue = "./test.txt")
     private File file;
 
     @CommandLine.Option(names = {"-c"}, description = "-c for counting character")
@@ -40,7 +40,7 @@ public class Main implements Callable<Result> {
 
         try {
             byte[] fileContent = Files.readAllBytes(Path.of(this.file.toURI()));
-            boolean switchAll = (this.switchCharacters == this.switchLine) && (this.switchLine == this.switchWords);
+            boolean switchAll = (switchCharacters == switchLine) && (switchLine == switchWords);
 
             if (switchAll) {
                 this.switchLine = true;
@@ -48,20 +48,21 @@ public class Main implements Callable<Result> {
                 this.switchCharacters = true;
             }
 
-            if (this.switchCharacters) {
+            if (switchCharacters) {
                 result.charCount = getCharsCount(fileContent);
             }
 
-            if (this.switchLine) {
+            if (switchLine) {
                 result.lineCount = getLineCount(fileContent);
             }
 
-            if (this.switchWords) {
+            if (switchWords) {
                 result.wordCount = getWordCount(fileContent);
             }
 
             return result;
         } catch (Exception exception) {
+            System.out.println(exception.getMessage());
             throw new FileNotFoundException();
         }
     }

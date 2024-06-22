@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0d09cc63-cc77-4f56-81a4-141dc13fdb47" name="Changes" comment="" />
+    <list default="true" id="0d09cc63-cc77-4f56-81a4-141dc13fdb47" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -10,22 +12,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="2hmhbtuxJbM0K6laki9eCJa6Nwz" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.python ccwc.py &lt;option&gt; &lt;path_to_file&gt;.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/olamidejubril/Documents/git-clone/coding-challenges/ccwc-python"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.python ccwc.py &amp;lt;option&amp;gt; &amp;lt;path_to_file&amp;gt;.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/olamidejubril/Documents/git-clone/coding-challenges/ccwc-python&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="python ccwc.py &amp;lt;option&amp;gt; &amp;lt;path_to_file&amp;gt;" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ccwc-python" />
