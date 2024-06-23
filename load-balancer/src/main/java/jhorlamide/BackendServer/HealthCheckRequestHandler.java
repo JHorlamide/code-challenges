@@ -10,24 +10,21 @@ import java.io.PrintWriter;
 
 public class HealthCheckRequestHandler extends HttpServlet {
    @Override
-   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
       try {
          Thread.sleep(250);
-         processRequest(request, response);
+
+         res.setContentType("text/plain");
+         PrintWriter responseWriter = res.getWriter();
+         String responseMessage = "Backend server is healthy";
+
+         responseWriter.println(responseMessage);
+         responseWriter.flush();
+         responseWriter.close();
+
+         RequestLogger.logRequest(req, responseMessage);
       } catch (InterruptedException e) {
          RequestLogger.logError(e.getMessage(), e);
       }
-   }
-
-   private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      response.setContentType("text/plain");
-      PrintWriter responseWriter = response.getWriter();
-      String responseMessage = "Backend server is healthy";
-
-      responseWriter.println(responseMessage);
-      responseWriter.flush();
-      responseWriter.close();
-
-      RequestLogger.logRequest(request, responseMessage);
    }
 }

@@ -10,20 +10,35 @@ import java.io.PrintWriter;
 
 public class BaseRequestHandler extends HttpServlet {
    @Override
-   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      processRequest(request, response);
+   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+      processRequest(req, res);
    }
 
-   private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+   @Override
+   protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+   }
+
+   @Override
+   protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+   }
+
+   @Override
+   protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+   }
+
+   private void processRequest(HttpServletRequest req, HttpServletResponse res) throws IOException {
       String responseMessage = "Replied with a hello message";
 
-      response.setContentType("text/plain");
-      PrintWriter responseWriter = response.getWriter();
+      res.setContentType("text/plain");
+      PrintWriter responseWriter = res.getWriter();
 
       responseWriter.println(responseMessage);
       responseWriter.flush();
       responseWriter.close();
 
-      RequestLogger.logRequest(request, responseMessage);
+      RequestLogger.logRequest(req, responseMessage);
    }
 }

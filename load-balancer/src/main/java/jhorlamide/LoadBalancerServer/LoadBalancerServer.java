@@ -8,11 +8,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import java.util.List;
 
 public class LoadBalancerServer {
-   private final List<String> backendServers;
-
    public LoadBalancerServer(int port, List<String> backendServers) throws Exception {
-      this.backendServers = backendServers;
-
       Server server = new Server(port);
 
       // create servlet context handler
