@@ -22,7 +22,7 @@ public class HealthCheckRequestHandler extends HttpServlet {
          responseWriter.flush();
          responseWriter.close();
 
-         RequestLogger.logRequest(req, responseMessage);
+         RequestLogger.log(req, responseMessage);
       } catch (InterruptedException e) {
          RequestLogger.logError(e.getMessage(), e);
       }

@@ -92,6 +92,6 @@ public class LBRequestHandler extends HttpServlet {
       responseWriter.close();
 
       String logMessage = "Response from server: " + req.getProtocol() + " " + res.getStatus();
-      RequestLogger.logRequest(backendUrl, req, logMessage, responseBody);
+      RequestLogger.log(backendUrl, req, logMessage, responseBody);
    }
 }

@@ -9,11 +9,11 @@ import java.util.logging.Logger;
 public class RequestLogger {
    private static final Logger logger = Logger.getLogger(RequestLogger.class.getName());
 
-   public static void logRequest(HttpServletRequest request, @Nullable String message) {
+   public static void log(HttpServletRequest request, @Nullable String message) {
       generateLogFormatAndLogRequest(null, request, null, message);
    }
 
-   public static void logRequest(
+   public static void log(
            String url, HttpServletRequest request, String statusResponse, String message) {
       generateLogFormatAndLogRequest(url, request, statusResponse, message);
    }
