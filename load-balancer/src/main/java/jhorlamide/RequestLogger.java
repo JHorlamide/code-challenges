@@ -38,7 +38,7 @@ public class RequestLogger {
 
       // Log request details
       StringBuilder logMessage = new StringBuilder();
-      logMessage.append("Received request from: ").append(reqAddress).append("\n");
+      logMessage.append("\n").append("Received request from: ").append(reqAddress).append("\n");
       logMessage.append(reqMethod).append(" ").append(reqURI).append(" ").append(reqProtocol).append("\n");
       logMessage.append("User-Agent: ").append(reqHeader).append("\n");
       logMessage.append("Host: ").append(reqHost).append("\n");

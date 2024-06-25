@@ -28,14 +28,12 @@ public class BaseRequestHandler extends HttpServlet {
 
    @Override
    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
-      var data = getReqData(req);
-
-      store.add(data);
+      store.add(getReqData(req));
 
       var responseMessage = "Data saved successfully";
 
       res.setContentType("application/json");
-      res.getWriter().println("{\"message\": " + responseMessage + " data: " + data + "}");
+      res.getWriter().println("{\"message\": " + responseMessage + " data: " + store + "}");
       res.getWriter().flush();
       res.getWriter().close();
 
@@ -45,12 +43,22 @@ public class BaseRequestHandler extends HttpServlet {
    @Override
    protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
       var data = getReqData(req);
-      store.add(data);
-
-      var responseMessage = "Put request received and processed";
+      String pathInfo = req.getPathInfo(); // pathInfo will be "/:id"
+      String[] pathParts = pathInfo.split("/");
+      String id = pathParts[1];
 
       res.setContentType("application/json");
-      res.getWriter().println("{\"message\": " + responseMessage + " data: " + data + "}");
+      String responseMessage = "Put request received and processed";
+
+      if (store.contains(id)) {
+         res.getWriter().println("{\"message\": \"Record not found\" \"}");
+         res.getWriter().flush();
+         res.getWriter().close();
+      }
+
+      store.add(Integer.parseInt(id), data);
+
+      res.getWriter().println("{\"message\": " + responseMessage + " data: " + store + "}");
       res.getWriter().flush();
       res.getWriter().close();
 

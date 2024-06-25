@@ -1,8 +1,10 @@
 package jhorlamide.LoadBalancerServer;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jhorlamide.LoadBalancerStrategy.RoundRobin;
 import jhorlamide.RequestLogger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -12,51 +14,75 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
-import java.util.List;
 
 public class LBRequestHandler extends HttpServlet {
-   private final List<String> backendServers;
+   private final RoundRobin lbStrategy;
 
-   public LBRequestHandler(List<String> backendServers) {
-      this.backendServers = backendServers;
+   public LBRequestHandler(RoundRobin lbStrategy) {
+      this.lbStrategy = lbStrategy;
    }
 
    @Override
-   protected void doGet(HttpServletRequest req, HttpServletResponse res) {
-      for (String backendUrl : backendServers) {
-         try {
-            Response backendResponse = executeRequest(backendUrl, req);
-            processRequest(req, res, backendResponse, backendUrl);
-         } catch (IOException e) {
-            RequestLogger.logError(e.getMessage(), e);
-         }
+   protected void doGet(HttpServletRequest req, HttpServletResponse res)
+           throws IOException, ServletException {
+      var server = lbStrategy.getNextServer();
+
+      if (server.isEmpty()) {
+         throw new ServletException("No backend server found");
       }
+
+      Response backendResponse = forwardRequestToServer(server, req);
+      processRequest(req, res, backendResponse, server);
    }
 
    @Override
-   protected void doPost(HttpServletRequest req, HttpServletResponse res) {
+   protected void doPost(HttpServletRequest req, HttpServletResponse res)
+           throws ServletException, IOException {
+      var server = lbStrategy.getNextServer();
 
+      if (server.isEmpty()) {
+         throw new ServletException("No backend server found");
+      }
+
+      Response backendResponse = forwardRequestToServer(server, req);
+      processRequest(req, res, backendResponse, server);
    }
 
    @Override
-   protected void doPut(HttpServletRequest req, HttpServletResponse res) {
+   protected void doPut(HttpServletRequest req, HttpServletResponse res)
+           throws ServletException, IOException {
+      var server = lbStrategy.getNextServer();
 
+      if (server.isEmpty()) {
+         throw new ServletException("No backend server found");
+      }
+
+      Response backendResponse = forwardRequestToServer(server, req);
+      processRequest(req, res, backendResponse, server);
    }
 
    @Override
-   protected void doDelete(HttpServletRequest req, HttpServletResponse res) {
+   protected void doDelete(HttpServletRequest req, HttpServletResponse res)
+           throws ServletException, IOException {
+      var server = lbStrategy.getNextServer();
 
+      if (server.isEmpty()) {
+         throw new ServletException("No backend server found");
+      }
+
+      Response backendResponse = forwardRequestToServer(server, req);
+      processRequest(req, res, backendResponse, server);
    }
 
    /**
     * Executes an HTTP request using OkHttp, forwarding the incoming request headers and URI.
     *
-    * @param backendUrl     the base URL to which the request is being sent
-    * @param req the incoming HttpServletRequest containing headers and request URI
+    * @param backendUrl the base URL to which the request is being sent
+    * @param req        the incoming HttpServletRequest containing headers and request URI
     * @return the response from executing the HTTP request
     * @throws IOException if an I/O error occurs during request execution
     */
-   private Response executeRequest(String backendUrl, HttpServletRequest req) throws IOException {
+   private Response forwardRequestToServer(String backendUrl, HttpServletRequest req) throws IOException {
       OkHttpClient httpClient = new OkHttpClient();
       Builder requestBuilder = new Request.Builder()
               .url(backendUrl + req.getRequestURI());
