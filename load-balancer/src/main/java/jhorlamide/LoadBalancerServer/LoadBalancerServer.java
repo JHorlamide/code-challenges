@@ -13,6 +13,7 @@ import java.util.List;
 public class LoadBalancerServer {
    public LoadBalancerServer(int port, List<String> backendServers) throws Exception {
       RoundRobin lbStrategy = new RoundRobin(backendServers);
+      lbStrategy.startServersHealthCheck();
 
       // Create a thread pool with a minimum of 10 threads and a maximum of 20 threads
       QueuedThreadPool threadPool = new QueuedThreadPool(20);
