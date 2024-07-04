@@ -4,7 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jhorlamide.LoadBalancerStrategy.RoundRobin;
+import jhorlamide.LoadBalancerStrategy.ILbStrategy;
 import jhorlamide.RequestLogger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,9 +16,9 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 
 public class LBRequestHandler extends HttpServlet {
-   private final RoundRobin lbStrategy;
+   private final ILbStrategy lbStrategy;
 
-   public LBRequestHandler(RoundRobin lbStrategy) {
+   public LBRequestHandler(ILbStrategy lbStrategy) {
       this.lbStrategy = lbStrategy;
    }
 

@@ -6,37 +6,39 @@ import okhttp3.Response;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class RoundRobin implements IRoundRobin {
-   private static final Logger logger = Logger.getLogger(RoundRobin.class.getName());
+public abstract class BaseLBStrategy implements ILbStrategy {
+   private static final Logger logger = Logger.getLogger(BaseLBStrategy.class.getName());
 
-   private final List<String> servers;
-   private int currentIndex = -1;
-   private final List<String> healthyServers;
-   private final List<String> unHealthyServers;
+   protected final List<String> healthyServers;
+   protected final List<String> servers;
+   protected final List<String> unHealthyServers;
 
-   public RoundRobin(List<String> servers) {
+   public BaseLBStrategy(List<String> servers) {
       this.servers = servers;
       this.healthyServers = new ArrayList<>();
       this.unHealthyServers = new ArrayList<>();
    }
 
-   @Override
-   public String getNextServer() {
-      currentIndex = (currentIndex + 1) % servers.size();
-      return servers.get(currentIndex);
+   public List<String> getServers() {
+      return new ArrayList<>(servers);
    }
 
    @Override
-   public void startServersHealthCheck() {
-      var executorService = Executors.newScheduledThreadPool(10);
+   public abstract String getNextServer();
 
-      var runnable = (() -> {
+   @Override
+   public void startServersHealthCheck() {
+      ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
+
+      Runnable runnable = (() -> {
          ArrayList<String> serverList = new ArrayList<>(servers);
          for (String serverUrl : serverList) {
             CompletableFuture.runAsync(() -> executeServerHealthcheck(serverUrl));
@@ -46,7 +48,7 @@ public class RoundRobin implements IRoundRobin {
       executorService.scheduleAtFixedRate(runnable, 0, 2, TimeUnit.SECONDS);
    }
 
-   private void updateHealthyServers(String serverUrl) {
+   protected void updateHealthyServers(String serverUrl) {
       unHealthyServers.remove(serverUrl);
 
       if (!healthyServers.contains(serverUrl)) {
@@ -56,14 +58,14 @@ public class RoundRobin implements IRoundRobin {
       logger.info("Updated healthy serverUrl list " + serverUrl);
    }
 
-   private void updateUnHealthyServers(String serverUrl) {
+   protected void updateUnHealthyServers(String serverUrl) {
       healthyServers.remove(serverUrl);
 
-      if (!healthyServers.contains(serverUrl)) {
-         healthyServers.add(serverUrl);
+      if (!unHealthyServers.contains(serverUrl)) {
+         unHealthyServers.add(serverUrl);
       }
 
-      logger.info("Updated unhealthy serverUrl list " + serverUrl);
+      logger.info("Updated unhealthy serverUrl list " + Arrays.toString(unHealthyServers.toArray()));
    }
 
    private void executeServerHealthcheck(String serverUrl) {

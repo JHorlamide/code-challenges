@@ -1,6 +1,7 @@
 package jhorlamide.LoadBalancerServer;
 
-import jhorlamide.LoadBalancerStrategy.RoundRobin;
+import jhorlamide.LoadBalancerStrategy.ILbStrategy;
+import jhorlamide.LoadBalancerStrategy.RandomRoundRobin;
 import jhorlamide.RequestLogger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -12,7 +13,9 @@ import java.util.List;
 
 public class LoadBalancerServer {
    public LoadBalancerServer(int port, List<String> backendServers) throws Exception {
-      RoundRobin lbStrategy = new RoundRobin(backendServers);
+      // ILbStrategy lbStrategy = new SimpleRoundRobin(backendServers);
+      // ILbStrategy lbStrategy = new BetterRoundRobin(backendServers);
+      ILbStrategy lbStrategy = new RandomRoundRobin(backendServers);
       lbStrategy.startServersHealthCheck();
 
       // Create a thread pool with a minimum of 10 threads and a maximum of 20 threads
