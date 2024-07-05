@@ -6,10 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jhorlamide.LoadBalancerStrategy.ILbStrategy;
 import jhorlamide.RequestLogger;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import okhttp3.*;
 import okhttp3.Request.Builder;
-import okhttp3.Response;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,6 +15,7 @@ import java.util.Enumeration;
 
 public class LBRequestHandler extends HttpServlet {
    private final ILbStrategy lbStrategy;
+   private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
    public LBRequestHandler(ILbStrategy lbStrategy) {
       this.lbStrategy = lbStrategy;
@@ -25,45 +24,28 @@ public class LBRequestHandler extends HttpServlet {
    @Override
    protected void doGet(HttpServletRequest req, HttpServletResponse res)
            throws IOException, ServletException {
-      var server = lbStrategy.getNextServer();
-
-      if (server.isEmpty()) {
-         throw new ServletException("No backend server found");
-      }
-
-      Response backendResponse = forwardRequestToServer(server, req);
-      processRequest(req, res, backendResponse, server);
+      handleRequest(req, res);
    }
 
    @Override
    protected void doPost(HttpServletRequest req, HttpServletResponse res)
            throws ServletException, IOException {
-      var server = lbStrategy.getNextServer();
-
-      if (server.isEmpty()) {
-         throw new ServletException("No backend server found");
-      }
-
-      Response backendResponse = forwardRequestToServer(server, req);
-      processRequest(req, res, backendResponse, server);
+      handleRequest(req, res);
    }
 
    @Override
    protected void doPut(HttpServletRequest req, HttpServletResponse res)
            throws ServletException, IOException {
-      var server = lbStrategy.getNextServer();
-
-      if (server.isEmpty()) {
-         throw new ServletException("No backend server found");
-      }
-
-      Response backendResponse = forwardRequestToServer(server, req);
-      processRequest(req, res, backendResponse, server);
+      handleRequest(req, res);
    }
 
    @Override
    protected void doDelete(HttpServletRequest req, HttpServletResponse res)
            throws ServletException, IOException {
+      handleRequest(req, res);
+   }
+
+   private void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
       var server = lbStrategy.getNextServer();
 
       if (server.isEmpty()) {
@@ -97,13 +79,28 @@ public class LBRequestHandler extends HttpServlet {
          requestBuilder.header(requestHeaderKey, requestHeaderValue);
       }
 
+      // Determine the HTTP method and handle the request body for POST, PUT, DELETE
+      String reqMethod = req.getMethod();
+      switch (reqMethod) {
+         case "POST":
+         case "PUT":
+         case "DELETE":
+            String body = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
+            RequestBody requestBody = RequestBody.create(body, JSON);
+            requestBuilder.method(reqMethod, requestBody);
+            break;
+
+         default:
+            requestBuilder.method(reqMethod, null);
+            break;
+      }
+
       Request request = requestBuilder.build();
       return httpClient.newCall(request).execute();
    }
 
-   private void processRequest(
-           HttpServletRequest req, HttpServletResponse res,
-           Response backendResponse, String backendUrl) throws IOException {
+   private void processRequest(HttpServletRequest req, HttpServletResponse res,
+                               Response backendResponse, String backendUrl) throws IOException {
       int responseStatusCode = backendResponse.code();
       String responseBody = backendResponse.body().string();
       String responseContentType = backendResponse.header("Content-Type");

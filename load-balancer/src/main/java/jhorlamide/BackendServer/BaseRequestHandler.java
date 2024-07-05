@@ -33,10 +33,9 @@ public class BaseRequestHandler extends HttpServlet {
       var responseMessage = "Data saved successfully";
 
       res.setContentType("application/json");
-      res.getWriter().println("{\"message\": " + responseMessage + " data: " + store + "}");
+      res.getWriter().println("{\"message\": " + responseMessage + " data: " + store.size() + "}");
       res.getWriter().flush();
       res.getWriter().close();
-
       RequestLogger.log(req, responseMessage);
    }
 
@@ -47,33 +46,43 @@ public class BaseRequestHandler extends HttpServlet {
       String[] pathParts = pathInfo.split("/");
       String id = pathParts[1];
 
-      res.setContentType("application/json");
+      int index = Integer.parseInt(id);
       String responseMessage = "Put request received and processed";
 
-      if (store.contains(id)) {
-         res.getWriter().println("{\"message\": \"Record not found\" \"}");
-         res.getWriter().flush();
-         res.getWriter().close();
+      if (index < 0 || index > store.size()) {
+         responseMessage = "Record not found";
+         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+         res.getWriter().println("{\"message\": \"" + responseMessage + "\"}");
+      } else {
+         store.set(index, data);
+         res.getWriter().println("{\"message\": \"" + responseMessage + "\", \"data\": " + store + "}");
       }
 
-      store.add(Integer.parseInt(id), data);
-
-      res.getWriter().println("{\"message\": " + responseMessage + " data: " + store + "}");
+      res.setContentType("application/json");
       res.getWriter().flush();
       res.getWriter().close();
-
       RequestLogger.log(req, responseMessage);
    }
 
    @Override
    protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
-      var dataKey = req.getRequestURI();
+      String pathInfo = req.getPathInfo(); // pathInfo will be "/:id"
+      String[] pathParts = pathInfo.split("/");
+      String id = pathParts[1];
+
+      int index = Integer.parseInt(id);
       var responseMessage = "DELETE request received and processed";
 
-      store.remove(dataKey);
+      if (index < 0 || index > store.size()) {
+         responseMessage = "Record not found";
+         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+         res.getWriter().println("{\"message\": \"" + responseMessage + "\"}");
+      } else {
+         store.remove(index);
+         res.getWriter().println("{\"message\": " + responseMessage + "}");
+      }
 
       res.setContentType("application/json");
-      res.getWriter().println("{\"message\": " + responseMessage + "}");
       res.getWriter().flush();
       res.getWriter().close();
 
